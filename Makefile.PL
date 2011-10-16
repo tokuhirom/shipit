@@ -20,6 +20,8 @@ WriteMakefile(
               PREREQ_PM      => {
                   'File::Spec'     => 0,
                   'Term::ReadLine' => 0,
+				  'Module::CPANTS::Analyse' => '0.85',
+				  'CPAN::Uploader' => '0.103000',
               },
               );
 

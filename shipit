@@ -6,39 +6,31 @@ use Cwd;
 use ShipIt;
 use Getopt::Long;
 
-use constant CONFFILE => ".shipit";
-
 my $opt_dry;
-my $opt_wc;
-my $opt_skiptests;
 exit(1) unless
     GetOptions("dry-run|n"    => \$opt_dry,
-               "write-config" => \$opt_wc,
-               "skip-test"    => \$opt_skiptests,
                );
 
 my $dir = shift || getcwd;
 die "Usage: shipit [<dir>]\n" unless -d $dir;
 chdir($dir) or die "Failed to chdir to $dir\n";
 
-if ($opt_wc) {
-    die "This directory already has a " . CONFFILE . " config file.  I won't overwrite it.  Aborting.\n"
-        if -e CONFFILE;
-    ShipIt::Conf->write_template(CONFFILE);
-    ShipIt::Util::edit_file(CONFFILE);
-    print "Config file written.\n";
-    exit(0);
-}
-
-unless (-e CONFFILE) {
-    die "No " . CONFFILE . " configuration file in $dir.\n" .
-        "Re-run with --write-config to get default config in \$EDITOR.\n";
-}
-
-my $conf  = ShipIt::Conf->parse(CONFFILE);
+use File::Temp qw(tempdir);
+my $tmpdir = tempdir();
+my $conf = bless(
+    {
+        'val' => {
+            'steps' =>
+'FindVersion, ChangeVersion, CheckChangeLog, DistTest, Commit, Tag, MakeDist, CPANTS, UploadCPAN',
+            'MakeDist.destination' => $tmpdir,
+            'git.push_to' => 'origin',
+        },
+        'asked' => {}
+    },
+    'ShipIt::Conf'
+);
 my $state = ShipIt::State->new($conf);
 $state->set_dry_run($opt_dry);
-$state->set_skip_tests($opt_skiptests);
 
 foreach my $step ($conf->steps) {
     warn "Running step $step\n";
