@@ -9,6 +9,7 @@ sub run {
         warn "\n**** ShipIt:  SKIPPING DIST TEST\n\n";
         return;
     }
+    local $ENV{RELEASE_TESTING} = 1;
     die "Making dist & testing failed." unless $pt->disttest;
 }
 
