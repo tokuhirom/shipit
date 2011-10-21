@@ -21,7 +21,7 @@ WriteMakefile(
                   'File::Spec'     => 0,
                   'Term::ReadLine' => 0,
 				  'Module::CPANTS::Analyse' => '0.85',
-				  'CPAN::META' => '2.112621',
+				  'CPAN::Meta' => '2.112621',
 				  'CPAN::Uploader' => '0.103000',
               },
               );
